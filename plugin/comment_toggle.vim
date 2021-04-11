@@ -41,6 +41,8 @@ xnoremap <silent> # :call ToggleCommentV()<CR>
 augroup CommentSupport
     autocmd!
     autocmd FileType             *sh,awk,python,perl,perl6,ruby    let b:CT_EOL_COMMENT = get(b:, 'CT_EOL_COMMENT', '#')
+    autocmd FileType             go                                let b:CT_EOL_COMMENT = get(b:, 'CT_EOL_COMMENT', '//')
+    autocmd FileType             go                                let b:CT_DELIMITED_COMMENT = { 'start': '/*', 'end': '*/' }
     autocmd FileType             vim                               let b:CT_EOL_COMMENT = get(b:, 'CT_EOL_COMMENT', '"')
     autocmd BufNewFile,BufRead   *.vim,.vimrc                      let b:CT_EOL_COMMENT = get(b:, 'CT_EOL_COMMENT', '"')
     autocmd BufNewFile,BufRead   *                                 let b:CT_EOL_COMMENT = get(b:, 'CT_EOL_COMMENT', '#')
@@ -59,8 +61,9 @@ function! ToggleComment ()
     let currline = getline(".")
 
     " If so, remove it and rewrite the line...
-    if currline =~ '^' . comment_char
-        let repline = substitute(currline, '^' . comment_char, "", "")
+    " Now also allows whitespace between ^ and comment_char.
+    if currline =~ '^\s*' . comment_char
+        let repline = substitute(currline, '^\s*' . comment_char, "", "")
         call setline(".", repline)
 
     " Otherwise, insert it...
@@ -101,12 +104,13 @@ function! ToggleCommentVisualBlock (comm_char, startline, endline, firstcol, las
     let currline = getline(a:startline, a:endline)
 
     " Decide their comment state by examining the first line...
-    if currline[0][a:firstcol : ] =~ '^' . a:comm_char
+    if currline[0][a:firstcol : ] =~ '^\s*' . a:comm_char
         " If the first line is commented, decomment all...
+        " Now also allows whitespace between ^ and comment_char.
         for line in currline
             call setline(linenum,
                     \   ( a:firstcol>0 ? line[0 : a:firstcol-1] : '')
-                    \ . substitute(line[a:firstcol:], '^' . a:comm_char, "", "") )
+                    \ . substitute(line[a:firstcol:], '^\s*' . a:comm_char, "", "") )
             let linenum += 1
         endfor
 
@@ -205,10 +209,11 @@ function! ToggleCommentVisualLine (comm_char, startline, endline) abort
     let currline = getline(a:startline, a:endline)
 
     " Decide their comment state by examining the first line...
-    if currline[0] =~ '^' . a:comm_char
+    if currline[0] =~ '^\s*' . a:comm_char
         " If the first line is commented, decomment all...
+        " Now also allows whitespace between ^ and comment_char.
         for line in currline
-            call setline(linenum, substitute(line, '^' . a:comm_char, "", "") )
+            call setline(linenum, substitute(line, '^\s*' . a:comm_char, "", "") )
             let linenum += 1
         endfor
 
