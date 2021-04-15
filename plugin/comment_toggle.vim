@@ -116,12 +116,11 @@ function! ToggleCommentVisualBlock (comm_char, startline, endline, firstcol, las
 
     else
         " Otherwise, encomment all...
-        let opt_comm = '^\(\s*\)\('. a:comm_char . '\)\?'
         for line in currline
             let line .= repeat(' ', a:firstcol - strchars(line))
             call setline(linenum,
                     \   ( a:firstcol > 0 ? line[0 : a:firstcol-1] : '')
-                    \ . substitute(line[a:firstcol:], opt_comm, '\1' . a:comm_char, "") )
+                    \ . substitute(line[a:firstcol:], '^\(\s*\)', '\1' . a:comm_char, "") )
             let linenum += 1
         endfor
     endif
@@ -219,9 +218,8 @@ function! ToggleCommentVisualLine (comm_char, startline, endline) abort
 
     else
         " Otherwise, encomment all...
-        let opt_comm = '^\(\s*\)\('. a:comm_char . '\)\?'
         for line in currline
-            call setline(linenum, substitute(line, opt_comm, '\1' . a:comm_char, "") )
+            call setline(linenum, substitute(line, '^\(\s*\)', '\1' . a:comm_char, "") )
             let linenum += 1
         endfor
     endif
