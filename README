@@ -2,7 +2,7 @@ Damian Conway's comment_toggle.vim
 
 Copied from https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/tree/master/plugin
 
-Two changes so far:
+The changes in this fork so far:
 
 * Packaged in a way that allows easy installing in modern vims.
 
@@ -18,6 +18,14 @@ Two changes so far:
   start of the line and any comment chars.
   i.e. from matching `^//` to also matching `^\s*//` for all languages.
   NOTE: THIS LIKELY BREAKS SOME OTHER BEHAVIOUR.
+
+* When inserting comment chars, this plugin now inserts them at the indent
+  level of the first non-whitespace character, rather than at the beginning of
+  the line.
+
+* When commenting a block, then always add the comment chars, even if the line
+  is already commented. This allows you to comment, then uncomment to get the
+  original line back exactly.
 
 Totally unsupported.
 
