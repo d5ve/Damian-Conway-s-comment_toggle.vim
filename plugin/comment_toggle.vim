@@ -63,12 +63,12 @@ function! ToggleComment ()
     " If so, remove it and rewrite the line...
     " Now also allows whitespace between ^ and comment_char.
     if currline =~ '^\s*' . comment_char
-        let repline = substitute(currline, '^\s*' . comment_char, "", "")
+        let repline = substitute(currline, '^\(\s*\)' . comment_char, '\1', "")
         call setline(".", repline)
 
     " Otherwise, insert it...
     else
-        let repline = substitute(currline, '^', comment_char, "")
+        let repline = substitute(currline, '^\(\s*\)', '\1' . comment_char, "")
         call setline(".", repline)
     endif
     call inputrestore()
@@ -110,18 +110,18 @@ function! ToggleCommentVisualBlock (comm_char, startline, endline, firstcol, las
         for line in currline
             call setline(linenum,
                     \   ( a:firstcol>0 ? line[0 : a:firstcol-1] : '')
-                    \ . substitute(line[a:firstcol:], '^\s*' . a:comm_char, "", "") )
+                    \ . substitute(line[a:firstcol:], '^\(\s*\)' . a:comm_char, '\1', "") )
             let linenum += 1
         endfor
 
     else
         " Otherwise, encomment all...
-        let opt_comm = '^\('. a:comm_char . '\)\?'
+        let opt_comm = '^\(\s*\)\('. a:comm_char . '\)\?'
         for line in currline
             let line .= repeat(' ', a:firstcol - strchars(line))
             call setline(linenum,
                     \   ( a:firstcol > 0 ? line[0 : a:firstcol-1] : '')
-                    \ . substitute(line[a:firstcol:], opt_comm, a:comm_char, "") )
+                    \ . substitute(line[a:firstcol:], opt_comm, '\1' . a:comm_char, "") )
             let linenum += 1
         endfor
     endif
@@ -213,15 +213,15 @@ function! ToggleCommentVisualLine (comm_char, startline, endline) abort
         " If the first line is commented, decomment all...
         " Now also allows whitespace between ^ and comment_char.
         for line in currline
-            call setline(linenum, substitute(line, '^\s*' . a:comm_char, "", "") )
+            call setline(linenum, substitute(line, '^\(\s*\)' . a:comm_char, '\1', "") )
             let linenum += 1
         endfor
 
     else
         " Otherwise, encomment all...
-        let opt_comm = '^\('. a:comm_char . '\)\?'
+        let opt_comm = '^\(\s*\)\('. a:comm_char . '\)\?'
         for line in currline
-            call setline(linenum, substitute(line, opt_comm, a:comm_char, "") )
+            call setline(linenum, substitute(line, opt_comm, '\1' . a:comm_char, "") )
             let linenum += 1
         endfor
     endif
